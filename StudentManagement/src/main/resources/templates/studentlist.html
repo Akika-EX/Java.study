@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>List of Students</title>
+</head>
+<body>
+<h1>List of Students</h1>
+<table border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>furigana</th>
+    <th>Nickname</th>
+    <th>email address</th>
+    <th>city address</th>
+    <th>Age</th>
+    <th>Gender</th>
+    <th>Remark</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="studentDetail : ${studentList}">
+    <td th:text="${studentDetail.student.studentId}">S001</td>
+    <td th:text="${studentDetail.student.fullName}">Taro Yamada</td>
+    <td th:text="${studentDetail.student.furigana}">Yamada Taro</td>
+    <td th:text="${studentDetail.student.nickname}">Taro</td>
+    <td th:text="${studentDetail.student.emailAddress}">taro.yamada@example.com</td>
+    <td th:text="${studentDetail.student.cityAddress}">Shinjuku, Tokyo</td>
+    <td th:text="${studentDetail.student.age}">30</td>
+    <td th:text="${studentDetail.student.gender}">Male</td>
+    <td th:text="${studentDetail.student.remark}">Null</td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
