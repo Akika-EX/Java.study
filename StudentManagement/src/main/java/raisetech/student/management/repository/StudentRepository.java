@@ -27,5 +27,14 @@ public interface StudentRepository {
           "VALUES(#{courseName}, #{studentId}, #{startDate}, #{completionDate})")
   @Options(useGeneratedKeys = true, keyProperty = "courseId")
     void registerStudentsCourses(StudentsCourses studentsCourses);
+
+  //第16回演習課題　受講生一覧から名前をクリックしたら紐づく情報を表示させる
+  //受講生情報を取得
+  @Select("SELECT * FROM students WHERE studentId = #{studentId}")
+  Student searchStudent(String studentId);
+
+  //IDに紐づいたコース情報を取得
+  @Select("SELECT * FROM students_courses WHERE studentId = #{studentId}")
+  List<StudentsCourses> searchStudentsCoursesByStudentId(String studentId);
 }
 

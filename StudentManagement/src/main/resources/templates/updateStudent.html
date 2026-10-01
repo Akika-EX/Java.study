@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Update on Student Information</title>
+</head>
+<body>
+<h1>Update on Student Information</h1>
+<form th:action="@{/updateStudent}" th:object="${studentDetail}" method="post">
+  <input type="hidden" th:field="*{student.studentId}"/>
+
+  <div>
+    <label for="fullname">Name:</label>
+    <input type="text" id="fullname" th:field="*{student.fullName}" required/>
+  </div>
+  <div>
+    <label for="furigana">Furigana:</label>
+    <input type="text" id="furigana" th:field="*{student.furigana}" required/>
+  </div>
+  <div>
+    <label for="nickname">Nickname:</label>
+    <input type="text" id="nickname" th:field="*{student.nickname}"/>
+  </div>
+  <div>
+    <label for="emailAddress">Email Address:</label>
+    <input type="email" id="emailAddress" th:field="*{student.emailAddress}" required/>
+  </div>
+  <div>
+    <label for="cityAddress">City Address:</label>
+    <input type="text" id="cityAddress" th:field="*{student.cityAddress}" required/>
+  </div>
+  <div>
+    <label for="age">Age:</label>
+    <input type="number" id="age" th:field="*{student.age}" required/>
+  </div>
+  <div>
+    <label>Gender:</label>
+    <label><input type="radio" th:field="*{student.gender}" value="male" required/> Male</label>
+    <label><input type="radio" th:field="*{student.gender}" value="female"/> Female</label>
+    <label><input type="radio" th:field="*{student.gender}" value="other"/> Other</label>
+  </div>
+  <div>
+    <label for="remark">Remark:</label>
+    <textarea id="remark" th:field="*{student.remark}"></textarea>
+  </div>
+
+  <hr/>
+
+  <h2>Course Information</h2>
+  <div th:each="course, stat : *{studentsCourses}" style="margin-bottom: 15px;">
+    <input type="hidden" th:field="*{studentsCourses[__${stat.index}__].courseId}"/>
+    <input type="hidden" th:field="*{studentsCourses[__${stat.index}__].studentId}"/>
+
+    <div>
+      <label>Course Name:</label>
+      <input type="text" th:field="*{studentsCourses[__${stat.index}__].courseName}" required/>
+    </div>
+    <div>
+      <label>Start Date:</label>
+      <input type="date" th:field="*{studentsCourses[__${stat.index}__].startDate}"/>
+    </div>
+    <div>
+      <label>Completion Date:</label>
+      <input type="date" th:field="*{studentsCourses[__${stat.index}__].completionDate}"/>
+    </div>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <button type="submit">Update</button>
+  </div>
+</form>
+
+</body>
+</html>

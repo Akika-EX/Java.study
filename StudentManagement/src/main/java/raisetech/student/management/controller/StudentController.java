@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import raisetech.student.management.controller.converter.StudentConverter;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentsCourses;
@@ -61,5 +62,14 @@ public class StudentController {
     }
     service.registerStudent(studentDetail);
     return "redirect:/studentList";
+  }
+
+  //第16回演習課題　受講生IDに基づいた情報を一覧から取得して画面に表示させる
+  @GetMapping("/updateStudent")
+  public String updateStudent(@RequestParam("studentId") String studentId, Model model) {
+    StudentDetail studentDetail = service.searchStudent(studentId);
+    model.addAttribute("studentDetail", studentDetail);
+
+    return "updateStudent";
   }
 }
