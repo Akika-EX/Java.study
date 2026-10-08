@@ -19,14 +19,28 @@ public class StudentService {
     this.repository = repository;
   }
 
+  //受講生一覧取得
   public List<Student> searchStudentList() {
     return repository.search();
   }
 
+  //受講生コースの一覧取得
   public List<StudentsCourses> searchStudentsCoursesList() {
     return repository.searchStudentsCourses();
   }
+  //指定したIDの受講生情報を取得
 
+  public StudentDetail searchStudent(String studentId) {
+    Student student = repository.searchStudent(studentId);
+    List<StudentsCourses> studentsCourses = repository.searchStudentsCoursesByStudentId(studentId);
+
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentsCourses(studentsCourses);
+    return studentDetail;
+  }
+
+  //受講生情報登録
   @Transactional
   public void registerStudent(StudentDetail studentDetail) {
     repository.registerStudent(studentDetail.getStudent());
@@ -35,26 +49,23 @@ public class StudentService {
 
     List<StudentsCourses> coursesList = studentDetail.getStudentsCourses();
     if (coursesList != null && !coursesList.isEmpty()) {
-    }
-    for (StudentsCourses course : coursesList) {
-      course.setStudentId(newStudentId);
-      repository.registerStudentsCourses(course);
+      for (StudentsCourses course : coursesList) {
+        course.setStudentId(newStudentId);
+        repository.registerStudentsCourses(course);
+      }
     }
   }
-  //第16回演習課題　受講生一覧の豹で名前をクリックすると、その受講生のID情報に基づいたデータを表示する　
 
-  public StudentDetail searchStudent(String studentId) {
-    //受講生情報をリポジトリからとってくる
-    Student student = repository.searchStudent(studentId);
+  //受講生情報の更新
+  @Transactional
+  public void updateStudent(StudentDetail studentDetail) {
+    repository.updateStudent(studentDetail.getStudent());
 
-    //IDに紐づいたコースをコースリポジトリからとってくる
-    List<StudentsCourses> studentsCourses = repository.searchStudentsCoursesByStudentId(studentId);
-
-    //取得した受講生情報とコース情報をStudentDetailにセット
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(student);
-    studentDetail.setStudentsCourses(studentsCourses);
-
-    return studentDetail;
+    List<StudentsCourses> coursesList = studentDetail.getStudentsCourses();
+    if (coursesList != null && !coursesList.isEmpty()) {
+      for (StudentsCourses studentsCourse : coursesList) {
+        repository.updateStudentsCourses(studentsCourse);
+      }
+    }
   }
 }
