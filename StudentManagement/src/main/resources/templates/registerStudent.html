@@ -8,8 +8,8 @@
 <h1>Student Registration</h1>
 <form th:action="@{/registerStudent}" th:object="${studentDetail}" method="post">
   <div>
-    <label for="fullname">Name:</label>
-    <input type="text" id="fullname" th:field="*{student.fullName}" required/>
+    <label for="fullName">Name:</label>
+    <input type="text" id="fullName" th:field="*{student.fullName}" required/>
   </div>
   <div>
     <label for="furigana">Furigana:</label>
