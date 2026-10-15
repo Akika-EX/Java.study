@@ -18,6 +18,7 @@
     <th>Age</th>
     <th>Gender</th>
     <th>Remark</th>
+    <th>Cancel</th>
   </tr>
   </thead>
   <tbody>
@@ -34,6 +35,9 @@
     <td th:text="${studentDetail.student.age}">30</td>
     <td th:text="${studentDetail.student.gender}">Male</td>
     <td th:text="${studentDetail.student.remark}">Null</td>
+    <td>
+      <input type="checkbox" th:checked="${studentDetail.student.isDeleted}"/>
+    </td>
   </tr>
   </tbody>
 </table>
