@@ -14,7 +14,7 @@ import raisetech.student.management.data.StudentsCourses;
 public interface StudentRepository {
 
   //受講生一覧取得
-  @Select("SELECT * FROM students WHERE isDeleted = false")
+  @Select("SELECT * FROM students")
   List<Student> search();
 
   //受講生1件の情報取得
