@@ -1,72 +1,78 @@
 package raisetech.student.management.controller;
 
-import java.util.ArrayList;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import raisetech.student.management.controller.converter.StudentConverter;
-import raisetech.student.management.data.Student;
-import raisetech.student.management.data.StudentsCourses;
 import raisetech.student.management.domain.StudentDetail;
 import raisetech.student.management.service.StudentService;
 
+/**
+ * 受講生の検索や登録、更新などを行うREST APIとして受け付けるControllerです
+ */
+@Validated
 @RestController
 public class StudentController {
 
   private StudentService service;
-  private StudentConverter converter;
 
   @Autowired
-  public StudentController(StudentService service, StudentConverter converter) {
+  public StudentController(StudentService service) {
     this.service = service;
-    this.converter = converter;
   }
 
+  /**
+   * 受講生詳細の一覧検索です。 全件検索を行うので、条件指定は行いません。
+   *
+   * @return　受講生一覧（全件）
+   */
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() {
-    List<Student> students = service.searchStudentList();
-    List<StudentsCourses> studentsCourses = service.searchStudentsCoursesList();
-    return converter.convertStudentDetails(students, studentsCourses);
+    return service.searchStudentList();
   }
 
+  /**
+   * 受講生詳細検索です。 IDに紐づく任意の受講生の情報を取得します。
+   *
+   * @param studentId 受講生ID
+   * @return 受講生詳細の一覧
+   */
   @GetMapping("/student/{studentId}")
-  public String getStudent(@PathVariable String studentId, Model model) {
-    StudentDetail studentDetail = service.searchStudent(studentId);
-    model.addAttribute("studentDetail", studentDetail);
-    return "updateStudent";
+  public StudentDetail getStudent(@PathVariable @Size(min = 1, max = 3)String studentId) {
+    return service.searchStudent(studentId);
   }
 
-  @GetMapping("/newStudent")
-  public String newStudent(Model model) {
-    StudentDetail studentDetail = new StudentDetail();
 
-    List<StudentsCourses> courses = new ArrayList<>();
-    courses.add(new StudentsCourses());
-    studentDetail.setStudentsCourses(courses);
-    model.addAttribute("studentDetail", studentDetail);
-    return "registerStudent";
-  }
+  /**
+   * 受講生詳細の登録を行います。
+   *
+   * ＠param studentDetail 受講生詳細
+   *
+   * @return 実行結果
+   */
 
   @PostMapping("/registerStudent")
-  public ResponseEntity<String> registerStudent(@RequestBody @Validated StudentDetail
-      studentDetail) {
-    service.registerStudent(studentDetail);
-    return ResponseEntity.ok("Registration was successful.");
+  public ResponseEntity<StudentDetail> registerStudent(@RequestBody @Valid StudentDetail studentDetail) {
+    StudentDetail responseStudentDetail = service.registerStudent(studentDetail);
+    return ResponseEntity.ok(responseStudentDetail);
   }
 
-  @PostMapping("/updateStudent")
-  public ResponseEntity<String> updateStudent(
-      @RequestBody @Validated StudentDetail studentDetail) {
+  /**
+   * 受講生詳細の更新を行います。
+   * キャンセルフラグの更新もここで行います（論理削除）。
+   * @param studentDetail　受講生詳細
+   * @return　実行結果
+   */
+  @PutMapping("/updateStudent")
+  public ResponseEntity<String> updateStudent(@RequestBody @Valid StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     return ResponseEntity.ok("Update was successful.");
   }

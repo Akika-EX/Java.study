@@ -30,6 +30,8 @@ dependencies {
 	//Thymeleaf
 	// Source: https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	//Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	//Apache Commons Lang
 	// Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
 	implementation "org.apache.commons:commons-lang3:3.14.0"
