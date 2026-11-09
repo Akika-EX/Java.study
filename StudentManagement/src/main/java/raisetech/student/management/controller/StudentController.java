@@ -1,6 +1,7 @@
 package raisetech.student.management.controller;
 
 import exception.TestException;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -35,6 +36,7 @@ public class StudentController {
    *
    * @return　受講生一覧（全件）
    */
+  @Operation(summary = "Search all students", description = "Search the list of students.")
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() {
     return service.searchStudentList();
@@ -46,11 +48,11 @@ public class StudentController {
    * @param studentId 受講生ID
    * @return 受講生詳細の一覧
    */
+  @Operation(summary = "Search for Students by ID", description = "Search for students with the specified ID")
   @GetMapping("/student/{studentId}")
   public StudentDetail getStudent(@PathVariable @Size(min = 1, max = 3) String studentId) {
     return service.searchStudent(studentId);
   }
-
 
   /**
    * 受講生詳細の登録を行います。
@@ -59,7 +61,7 @@ public class StudentController {
    *
    * @return 実行結果
    */
-
+  @Operation(summary = "Register student", description = "Register a student.")
   @PostMapping("/registerStudent")
   public ResponseEntity<StudentDetail> registerStudent(
       @RequestBody @Valid StudentDetail studentDetail) {
@@ -73,12 +75,13 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return　実行結果
    */
+  @Operation(summary = "Update student", description = "Update the student information.")
   @PutMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(@RequestBody @Valid StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     return ResponseEntity.ok("Update was successful.");
   }
-
+ @Operation(summary = "Exception Handling Test", description = "Perform exception handling tests.")
   @GetMapping("/testException")
   public void testException() throws TestException {
     throw new TestException("This is test exception.");
