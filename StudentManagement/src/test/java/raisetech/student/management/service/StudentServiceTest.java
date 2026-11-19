@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,7 @@ class StudentServiceTest {
    * 受講生詳細の一覧検索のテストです。
    */
   @Test
-  void 受講生詳細一覧検索テスト() {
+  void 受講生詳細一覧検索で受講生詳細情報の一覧が取得できること() {
     //Arrange
     List<Student> studentList = new ArrayList<>();
     List<StudentCourse> studentCourseList = new ArrayList<>();
@@ -66,7 +67,7 @@ class StudentServiceTest {
    * 受講生詳細検索のテストです。
    */
   @Test
-  void 受講生詳細検索のテスト() {
+  void 受講生詳細検索_studentIdに紐づいた受講生詳細情報が取得できること() {
     //Arrange
     String studentId = "1";
     Student student = new Student();
@@ -85,11 +86,12 @@ class StudentServiceTest {
     assertEquals(student, actual.getStudent());
     assertEquals(studentCourseList, actual.getStudentCourseList());
   }
+
   /**
    * 存在しない受講生を検索したときのテストです。
    */
   @Test
-  void 受講生詳細検索_受講生が存在しないときのテスト() {
+  void 受講生詳細検索_受講生が存在しないときに空の受講生詳細が返ってくること() {
     //Arrange
     String studentId = "1000000";
     when(repository.searchStudent(studentId)).thenReturn(null);
@@ -106,7 +108,7 @@ class StudentServiceTest {
    * 受講生詳細の登録のテストです。
    */
   @Test
-  void 受講生詳細の登録テスト() {
+  void 受講生詳細登録_受講生詳細情報と受講生コース情報が登録処理されること() {
     //Arrange
     Student student = new Student();
     student.setStudentId("1");
@@ -124,68 +126,85 @@ class StudentServiceTest {
     verify(repository, times(1)).registerStudent(student);
     verify(repository, times(1)).registerStudentCourse(studentCourse);
   }
-  /**
-   * 受講生詳細の登録に失敗したとき、コース情報の登録が行われないことのテストです。
-   */
+
   @Test
-   void 受講生詳細の登録_登録に失敗したときコース情報の登録が行われないことのテスト(){
-  //Arrange
+  void 受講生詳細の登録_初期化処理が行われること() {
+    String id = "10000";
     Student student = new Student();
-    student.setStudentId("1");
+    student.setStudentId(id);
     StudentCourse studentCourse = new StudentCourse();
-    StudentDetail studentDetail = new StudentDetail(student, List.of(studentCourse));
-    doThrow(new RuntimeException("Error")).when(repository).registerStudent(student);
 
-  //Act
-  assertThrows(RuntimeException.class, () -> {
-    sut.registerStudent(studentDetail);
-  });
+    sut.initStudentsCourse(studentCourse, student);
 
-  //Verify
-    verify(repository, times(1)).registerStudent(student);
-    verify(repository, never()).registerStudentCourse(studentCourse);
+    assertEquals("10000", studentCourse.getStudentId());
+    assertEquals(LocalDate.now().getDayOfMonth(),
+        studentCourse.getStartDate().getDayOfMonth());
+    assertEquals(LocalDate.now().plusYears(1).getYear(),
+        studentCourse.getCompletionDate().getYear());
   }
 
-  /**
-   * 受講生詳細の登録時、コース情報が空欄のときにはコース登録が行われないことのテストです。
-   */
-  @Test
-  void 受講生詳細の登録_コース情報が空欄だったときコース登録が行われないこと(){
-    //Arrange
-    Student student = new Student();
-    student.setStudentId("1");
-    StudentDetail studentDetail = new StudentDetail(student, new ArrayList<>());
+    /**
+     * 受講生詳細の登録に失敗したとき、コース情報の登録が行われないことのテストです。
+     */
+    @Test
+    void 受講生詳細の登録_登録に失敗したときコース情報の登録が行われないことのテスト () {
+      //Arrange
+      Student student = new Student();
+      student.setStudentId("1");
+      StudentCourse studentCourse = new StudentCourse();
+      StudentDetail studentDetail = new StudentDetail(student, List.of(studentCourse));
+      doThrow(new RuntimeException("Error")).when(repository).registerStudent(student);
 
-    //Act
-    sut.registerStudent(studentDetail);
+      //Act
+      assertThrows(RuntimeException.class, () -> {
+        sut.registerStudent(studentDetail);
+      });
 
-    //Assert/Verify
-    verify(repository, times(1)).registerStudent(student);
-    verify(repository, never()).registerStudentCourse(any());
+      //Verify
+      verify(repository, times(1)).registerStudent(student);
+      verify(repository, never()).registerStudentCourse(studentCourse);
+    }
+
+    /**
+     * 受講生詳細の登録時、コース情報が空欄のときにはコース登録が行われないことのテストです。
+     */
+    @Test
+    void 受講生詳細の登録_コース情報が空欄だったときコース登録が行われないこと () {
+      //Arrange
+      Student student = new Student();
+      student.setStudentId("1");
+      StudentDetail studentDetail = new StudentDetail(student, new ArrayList<>());
+
+      //Act
+      sut.registerStudent(studentDetail);
+
+      //Assert/Verify
+      verify(repository, times(1)).registerStudent(student);
+      verify(repository, never()).registerStudentCourse(any());
+    }
+
+    /**
+     * 受講生詳細の更新のテストです。
+     */
+    @Test
+    void 受講生詳細の更新_受講生詳細情報と受講生コース情報の更新処理が行われること () {
+      //Arrange
+      Student student = new Student();
+      student.setStudentId("1");
+
+      StudentCourse studentCourse1 = new StudentCourse();
+      StudentCourse studentCourse2 = new StudentCourse();
+      List<StudentCourse> studentCourseList = List.of(studentCourse1, studentCourse2);
+
+      StudentDetail studentDetail = new StudentDetail(student, studentCourseList);
+
+      //Act
+      sut.updateStudent(studentDetail);
+
+      //Assert/Verify
+      verify(repository, times(1)).updateStudent(student);
+      verify(repository, times(1)).updateStudentCourse(studentCourse1);
+      verify(repository, times(1)).updateStudentCourse(studentCourse2);
+    }
   }
-
-  /**
-   * 受講生詳細の更新のテストです。
-   */
-  @Test
-  void 受講生詳細の更新テスト() {
-    //Arrange
-    Student student = new Student();
-    student.setStudentId("1");
-
-    StudentCourse studentCourse1 = new StudentCourse();
-    StudentCourse studentCourse2 = new StudentCourse();
-    List<StudentCourse> studentCourseList = List.of(studentCourse1, studentCourse2);
-
-    StudentDetail studentDetail = new StudentDetail(student, studentCourseList);
-
-    //Act
-    sut.updateStudent(studentDetail);
-
-    //Assert/Verify
-    verify(repository, times(1)).updateStudent(student);
-    verify(repository, times(1)).updateStudentCourse(studentCourse1);
-    verify(repository, times(1)).updateStudentCourse(studentCourse2);
-  }
-}
 
