@@ -181,5 +181,3 @@ class StudentControllerTest {
         .containsOnly("Please enter a course name of 100 characters or fewer.");
   }
 }
-
-
